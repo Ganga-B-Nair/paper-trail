@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Paste any claim and it comes apart into the separate assertions it makes, each marked for what it would take to check.">
+<title>Paper Trail — assertion-level claim triage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#EEF1F4;
+    --card:#FFFFFF;
+    --ink:#15191E;
+    --ink-2:#4A545E;
+    --ink-3:#7C8792;
+    --rule:#D3DAE1;
+    --rule-2:#E4E9ED;
+    --accent:#24456F;
+    --accent-soft:#E3EAF3;
+    --ok:#0E6B4F;
+    --ok-soft:#DCEDE6;
+    --warn:#8A6208;
+    --warn-soft:#F4EAD3;
+    --bad:#A83527;
+    --bad-soft:#F6DFDB;
+    --shadow:0 1px 2px rgba(21,25,30,.06),0 8px 24px -12px rgba(21,25,30,.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0F1317;
+      --card:#171C22;
+      --ink:#E6EBF0;
+      --ink-2:#A3AEB9;
+      --ink-3:#6F7A85;
+      --rule:#2A323B;
+      --rule-2:#222931;
+      --accent:#8FB3E0;
+      --accent-soft:#1B2836;
+      --ok:#5FC49D;
+      --ok-soft:#142A23;
+      --warn:#DCAF4E;
+      --warn-soft:#2C2416;
+      --bad:#E8806F;
+      --bad-soft:#2E1B18;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0F1317; --card:#171C22; --ink:#E6EBF0; --ink-2:#A3AEB9; --ink-3:#6F7A85;
+    --rule:#2A323B; --rule-2:#222931; --accent:#8FB3E0; --accent-soft:#1B2836;
+    --ok:#5FC49D; --ok-soft:#142A23; --warn:#DCAF4E; --warn-soft:#2C2416;
+    --bad:#E8806F; --bad-soft:#2E1B18;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:15px;
+    line-height:1.55;
+    margin:0;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding-inline:20px;padding-block:28px 72px}
+
+  /* ---------- masthead ---------- */
+  .masthead{border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:6px}
+  .brandrow{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  h1{
+    font-family:"Newsreader",Georgia,serif;
+    font-weight:600;font-size:clamp(30px,6.5vw,44px);
+    letter-spacing:-.015em;margin:0;line-height:1;
+  }
+  .tagline{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-3);
+  }
+  .lede{
+    font-family:"Newsreader",Georgia,serif;font-size:17px;color:var(--ink-2);
+    margin:12px 0 0;max-width:62ch;text-wrap:pretty;
+  }
+
+  /* ---------- input ---------- */
+  .composer{margin-top:24px}
+  .label{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;
+    font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+    display:block;margin-bottom:7px;
+  }
+  textarea{
+    width:100%;min-height:132px;resize:vertical;
+    background:var(--card);color:var(--ink);
+    border:1px solid var(--rule);border-radius:3px;
+    padding:14px 15px;font:inherit;font-size:15px;line-height:1.55;
+    box-shadow:var(--shadow);
+  }
+  textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+
+  .samples{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;align-items:center}
+  .samples .label{margin:0 4px 0 0}
+  .chip{
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;
+    background:transparent;color:var(--ink-2);
+    border:1px solid var(--rule);border-radius:100px;
+    padding:4px 11px;cursor:pointer;
+  }
+  .chip:hover{border-color:var(--accent);color:var(--accent)}
+  .chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .actions{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
+  .btn{
+    font-family:"IBM Plex Sans",sans-serif;font-weight:600;font-size:14.5px;
+    background:var(--ink);color:var(--paper);
+    border:1px solid var(--ink);border-radius:3px;
+    padding:10px 20px;cursor:pointer;
+  }
+  .btn:hover{opacity:.87}
+  .btn:disabled{opacity:.42;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--ink-2);border-color:var(--rule)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .status{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3)}
+
+  /* ---------- receipt ---------- */
+  .receipt{
+    margin-top:30px;background:var(--card);
+    border:1px solid var(--rule);border-radius:3px;box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .receipt-head{
+    padding:16px 20px;border-bottom:1px dashed var(--rule);
+    display:flex;gap:14px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;
+  }
+  .verdict{font-family:"Newsreader",Georgia,serif;font-size:21px;line-height:1.25;margin:0;max-width:48ch;text-wrap:balance}
+  .stamp{
+    font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    border:1px solid currentColor;border-radius:2px;padding:4px 8px;white-space:nowrap;
+  }
+  .stamp.high{color:var(--ok)} .stamp.medium{color:var(--warn)} .stamp.low{color:var(--bad)}
+  .example-flag{
+    font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    background:var(--accent-soft);color:var(--accent);padding:5px 20px;border-bottom:1px solid var(--rule-2);
+  }
+
+  /* meter */
+  .meter-block{padding:15px 20px;border-bottom:1px dashed var(--rule)}
+  .meter{display:flex;height:9px;border-radius:2px;overflow:hidden;background:var(--rule-2)}
+  .meter span{display:block}
+  .meter .s-ok{background:var(--ok)} .meter .s-warn{background:var(--warn)} .meter .s-bad{background:var(--bad)}
+  .keys{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:9px}
+  .key{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-2);display:flex;align-items:center;gap:6px}
+  .dot{width:8px;height:8px;border-radius:2px;flex:none}
+  .dot.s-ok{background:var(--ok)} .dot.s-warn{background:var(--warn)} .dot.s-bad{background:var(--bad)}
+
+  /* marked-up source text */
+  .source{padding:18px 20px;border-bottom:1px dashed var(--rule)}
+  .source p{
+    font-family:"Newsreader",Georgia,serif;font-size:17.5px;line-height:1.72;margin:0;
+  }
+  mark{
+    background:transparent;color:inherit;padding:1px 0 2px;
+    border-bottom:2px solid var(--rule);
+    transition:background-color .45s ease, border-color .45s ease;
+  }
+  mark.lit.m-ok{background:var(--ok-soft);border-bottom-color:var(--ok)}
+  mark.lit.m-warn{background:var(--warn-soft);border-bottom-color:var(--warn)}
+  mark.lit.m-bad{background:var(--bad-soft);border-bottom-color:var(--bad)}
+  @media (prefers-reduced-motion: reduce){ mark{transition:none} }
+
+  /* assertion rows */
+  .rows{list-style:none;margin:0;padding:0}
+  .row{
+    display:grid;grid-template-columns:34px 1fr;gap:0 14px;
+    padding:16px 20px;border-bottom:1px solid var(--rule-2);
+  }
+  .row:last-child{border-bottom:0}
+  .num{
+    font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);
+    font-variant-numeric:tabular-nums;padding-top:3px;
+  }
+  .claim{font-family:"Newsreader",Georgia,serif;font-size:16.5px;line-height:1.5;margin:0 0 7px;text-wrap:pretty}
+  .tags{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:7px}
+  .tag{
+    font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+    padding:3px 8px;border-radius:2px;
+  }
+  .tag.t-ok{background:var(--ok-soft);color:var(--ok)}
+  .tag.t-warn{background:var(--warn-soft);color:var(--warn)}
+  .tag.t-bad{background:var(--bad-soft);color:var(--bad)}
+  .tag.t-load{background:transparent;color:var(--ink-2);border:1px solid var(--rule)}
+  .note{margin:0;color:var(--ink-2);font-size:14px}
+  .check{
+    margin:8px 0 0;padding-left:12px;border-left:2px solid var(--rule);
+    font-size:13.5px;color:var(--ink-3);
+  }
+  .check b{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:500;display:block}
+
+  /* devices + settle */
+  .panel{padding:16px 20px;border-top:1px dashed var(--rule)}
+  .panel h3{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--ink-3);margin:0 0 10px;font-weight:500;
+  }
+  .devs{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+  .devs li{font-size:14px;color:var(--ink-2)}
+  .devs .dev-name{font-weight:600;color:var(--ink)}
+  .devs q{font-family:"Newsreader",Georgia,serif;font-style:italic;color:var(--ink)}
+  .settle{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  .settle li{
+    font-size:14px;color:var(--ink-2);padding-left:20px;position:relative;
+  }
+  .settle li::before{
+    content:"→";position:absolute;left:0;color:var(--accent);
+    font-family:"IBM Plex Mono",monospace;
+  }
+
+  .foot{
+    margin-top:26px;padding-top:14px;border-top:1px solid var(--rule);
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);
+    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  }
+  .err{
+    margin-top:22px;padding:14px 16px;border-left:3px solid var(--bad);
+    background:var(--bad-soft);color:var(--ink);font-size:14px;border-radius:0 3px 3px 0;
+  }
+  @media (max-width:430px){
+    .row{grid-template-columns:26px 1fr;gap:0 10px;padding:14px 15px}
+    .receipt-head,.meter-block,.source,.panel{padding-inline:15px}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="brandrow">
+      <h1>Paper Trail</h1>
+      <div class="tagline">Claim&nbsp;·&nbsp;Decomposition&nbsp;·&nbsp;Receipt</div>
+    </div>
+    <p class="lede">Confident paragraphs hide their seams. Paste one — a headline, a forwarded message, a press line — and it comes apart into the separate things it is actually asserting, each one marked for what it would take to check.</p>
+  </header>
+
+  <section class="composer">
+    <label class="label" for="claim-input">Text under examination</label>
+    <textarea id="claim-input" spellcheck="false">A new study proves that students who use AI tools score 40% higher on exams, which is why every serious university has already made them mandatory. Critics who disagree simply haven't read the research.</textarea>
+
+    <div class="samples">
+      <span class="label">Try</span>
+      <button class="chip" type="button" data-fill="Doctors are hiding the fact that this common kitchen spice cures inflammation better than any prescription drug, and the pharmaceutical industry spends billions every year to keep it out of the news.">health forward</button>
+      <button class="chip" type="button" data-fill="Our platform reduced customer churn by 63% in under six months, making it the fastest-growing retention tool on the market and the obvious choice for any serious enterprise team.">vendor claim</button>
+      <button class="chip" type="button" data-fill="Crime in the city has doubled since the new policy took effect last year, and residents everywhere say they no longer feel safe walking home after dark.">news line</button>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="run" type="button">Pull the receipt</button>
+      <button class="btn ghost" id="stop" type="button" hidden>Stop</button>
+      <span class="status" id="status"></span>
+    </div>
+  </section>
+
+  <div id="error-slot"></div>
+
+  <article class="receipt" id="receipt">
+    <div class="example-flag" id="example-flag">Example analysis — press “Pull the receipt” to run it on your own text</div>
+    <div class="receipt-head">
+      <h2 class="verdict" id="verdict">One real finding is doing the work of three claims it does not support.</h2>
+      <span class="stamp medium" id="stamp">Mixed</span>
+    </div>
+
+    <div class="meter-block">
+      <div class="meter" id="meter" role="img" aria-label="Composition of the passage by assertion type">
+        <span class="s-ok" style="flex:1"></span>
+        <span class="s-warn" style="flex:2"></span>
+        <span class="s-bad" style="flex:2"></span>
+      </div>
+      <div class="keys" id="keys">
+        <span class="key"><i class="dot s-ok"></i>1 checkable</span>
+        <span class="key"><i class="dot s-warn"></i>2 unverifiable as written</span>
+        <span class="key"><i class="dot s-bad"></i>2 rhetoric, not evidence</span>
+      </div>
+    </div>
+
+    <div class="source">
+      <p id="source-text"><mark class="lit m-warn">A new study proves that students who use AI tools score 40% higher on exams</mark>, which is why <mark class="lit m-bad">every serious university has already made them mandatory</mark>. <mark class="lit m-bad">Critics who disagree simply haven't read the research.</mark></p>
+    </div>
+
+    <ul class="rows" id="rows">
+      <li class="row">
+        <span class="num">01</span>
+        <div>
+          <p class="claim">A new study proves that students who use AI tools score 40% higher on exams</p>
+          <div class="tags"><span class="tag t-warn">Unverifiable as written</span><span class="tag t-load">Load-bearing</span></div>
+          <p class="note">No study is named, so the figure cannot be traced. “Proves” also overstates what a single study can do — and a score gap does not establish that the tools caused it.</p>
+          <p class="check"><b>What would settle it</b>The citation: which study, what sample size, was it randomised, and 40% higher than what baseline.</p>
+        </div>
+      </li>
+      <li class="row">
+        <span class="num">02</span>
+        <div>
+          <p class="claim">every serious university has already made them mandatory</p>
+          <div class="tags"><span class="tag t-bad">False as stated</span></div>
+          <p class="note">A universal claim that one counterexample defeats, and “serious” is doing quiet work — it lets any university that hasn't be dismissed as not serious.</p>
+          <p class="check"><b>What would settle it</b>A single named university with no such mandate.</p>
+        </div>
+      </li>
+      <li class="row">
+        <span class="num">03</span>
+        <div>
+          <p class="claim">Critics who disagree simply haven't read the research.</p>
+          <div class="tags"><span class="tag t-bad">Rhetoric, not evidence</span></div>
+          <p class="note">This is not a claim about the world; it is a pre-emptive dismissal that makes disagreement itself the proof of ignorance. Nothing here can be true or false.</p>
+          <p class="check"><b>What would settle it</b>Nothing — it makes no factual assertion to test.</p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="panel">
+      <h3>Rhetorical moves</h3>
+      <ul class="devs" id="devs">
+        <li><span class="dev-name">Causal slide</span> — <q>which is why</q> turns an unestablished correlation into a stated reason, without argument.</li>
+        <li><span class="dev-name">No-true-Scotsman</span> — <q>every serious university</q> makes the claim unfalsifiable by redefining exceptions out of the set.</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h3>To check this yourself</h3>
+      <ul class="settle" id="settle">
+        <li>Ask for the study by name, then read its abstract rather than the summary of it.</li>
+        <li>Check whether the 40% is a test-score difference or a relative change in something else.</li>
+        <li>Look for one named university that has not made the tools mandatory.</li>
+      </ul>
+    </div>
+  </article>
+
+  <div class="foot">
+    <span>Paper Trail · assertion-level triage</span>
+    <span id="foot-note">Judgements are Claude's reading of the text, not a fact-check against live sources.</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  var input   = document.getElementById('claim-input');
+  var runBtn  = document.getElementById('run');
+  var stopBtn = document.getElementById('stop');
+  var statusEl= document.getElementById('status');
+  var errSlot = document.getElementById('error-slot');
+  var flag    = document.getElementById('example-flag');
+  var ctl = null;
+
+  Array.prototype.forEach.call(document.querySelectorAll('.chip'), function(c){
+    c.addEventListener('click', function(){
+      input.value = c.getAttribute('data-fill');
+      input.focus();
+    });
+  });
+
+  var BUCKET = { supported:'ok', checkable:'ok', unverifiable:'warn', disputed:'warn', misleading:'bad', false:'bad', rhetoric:'bad', opinion:'warn' };
+  function bucket(v){ return BUCKET[String(v||'').toLowerCase()] || 'warn'; }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); }
+
+  function setStatus(t){ statusEl.textContent = t; }
+  function clearErr(){ errSlot.innerHTML = ''; }
+  function showErr(msg){ errSlot.innerHTML = '<div class="err">' + esc(msg) + '</div>'; }
+
+  var ERRCOPY = {
+    no_key:'The server has no API key configured. Set ANTHROPIC_API_KEY in your Vercel project settings and redeploy.',
+    rate_limited:'Too many requests just now. Wait a moment and pull the receipt again.',
+    too_long:'That passage is too long. Paste a few paragraphs at most.',
+    bad_json:'The analysis came back malformed. Press “Pull the receipt” to try again.',
+    upstream:'The analysis service is not responding. Try again in a moment.'
+  };
+
+  runBtn.addEventListener('click', function(){
+    var text = input.value.trim();
+    clearErr();
+    if(!text){ showErr('Paste some text first — a headline, a claim, a forwarded message.'); return; }
+
+    ctl = new AbortController();
+    runBtn.disabled = true; stopBtn.hidden = false;
+    setStatus('Reading the passage…');
+
+    fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: text }),
+      signal: ctl.signal
+    })
+      .then(function(res){
+        return res.json().then(function(body){
+          if(!res.ok) throw { code: body && body.code, message: body && body.error };
+          return body;
+        });
+      })
+      .then(function(data){ render(data, text); setStatus(''); })
+      .catch(function(e){
+        if(e && (e.name === 'AbortError' || e.code === 'cancelled')){ setStatus(''); return; }
+        setStatus('');
+        showErr(ERRCOPY[e && e.code] || 'Something went wrong running the analysis. Try again.');
+      })
+      .finally(function(){ runBtn.disabled = false; stopBtn.hidden = true; ctl = null; });
+  });
+
+  stopBtn.addEventListener('click', function(){ if(ctl) ctl.abort(); });
+
+  function render(data, passage){
+    var list = (data && Array.isArray(data.assertions)) ? data.assertions : [];
+    if(!list.length){ showErr('No separable assertions were found in that text.'); return; }
+
+    flag.hidden = true;
+
+    document.getElementById('verdict').textContent = data.verdict_line || 'Assertion breakdown';
+    var conf = String(data.confidence || 'medium').toLowerCase();
+    var stamp = document.getElementById('stamp');
+    stamp.className = 'stamp ' + (conf === 'high' || conf === 'low' ? conf : 'medium');
+    stamp.textContent = conf + ' confidence';
+
+    // counts + meter
+    var counts = {ok:0,warn:0,bad:0};
+    list.forEach(function(a){ counts[bucket(a.verdict)]++; });
+    var meter = document.getElementById('meter'), keys = document.getElementById('keys');
+    meter.innerHTML = ''; keys.innerHTML = '';
+    var LAB = {ok:'checkable', warn:'unverifiable as written', bad:'rhetoric or false'};
+    ['ok','warn','bad'].forEach(function(k){
+      if(!counts[k]) return;
+      var seg = document.createElement('span');
+      seg.className = 's-' + k; seg.style.flex = String(counts[k]);
+      meter.appendChild(seg);
+      var key = document.createElement('span');
+      key.className = 'key';
+      key.innerHTML = '<i class="dot s-' + k + '"></i>' + counts[k] + ' ' + LAB[k];
+      keys.appendChild(key);
+    });
+
+    // marked-up passage: locate each verbatim span
+    var spans = [];
+    var cursor = 0;
+    list.forEach(function(a, i){
+      var needle = String(a.text || '').trim();
+      if(!needle) return;
+      var at = passage.indexOf(needle, cursor);
+      if(at === -1) at = passage.indexOf(needle);
+      if(at === -1) return;
+      spans.push({start:at, end:at + needle.length, b:bucket(a.verdict), i:i});
+      cursor = at + needle.length;
+    });
+    spans.sort(function(x,y){ return x.start - y.start; });
+    var html = '', pos = 0, placed = [];
+    spans.forEach(function(s){
+      if(s.start < pos) return;
+      html += esc(passage.slice(pos, s.start));
+      html += '<mark class="m-' + s.b + '" data-i="' + s.i + '">' + esc(passage.slice(s.start, s.end)) + '</mark>';
+      pos = s.end; placed.push(s.i);
+    });
+    html += esc(passage.slice(pos));
+    var src = document.getElementById('source-text');
+    src.innerHTML = html;
+
+    // light them up in sequence — the passage coming apart
+    var marks = src.querySelectorAll('mark');
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    Array.prototype.forEach.call(marks, function(m, n){
+      if(reduced){ m.classList.add('lit'); }
+      else setTimeout(function(){ m.classList.add('lit'); }, 160 + n * 210);
+    });
+
+    // assertion rows
+    var rows = document.getElementById('rows');
+    rows.innerHTML = '';
+    list.forEach(function(a, i){
+      var b = bucket(a.verdict);
+      var li = document.createElement('li');
+      li.className = 'row';
+      var tags = '<span class="tag t-' + b + '">' + esc(a.label || a.verdict || '') + '</span>';
+      if(a.load_bearing) tags += '<span class="tag t-load">Load-bearing</span>';
+      li.innerHTML =
+        '<span class="num">' + String(i+1).padStart(2,'0') + '</span>' +
+        '<div>' +
+          '<p class="claim">' + esc(a.text) + '</p>' +
+          '<div class="tags">' + tags + '</div>' +
+          (a.note ? '<p class="note">' + esc(a.note) + '</p>' : '') +
+          (a.check ? '<p class="check"><b>What would settle it</b>' + esc(a.check) + '</p>' : '') +
+        '</div>';
+      rows.appendChild(li);
+    });
+
+    // devices
+    var devs = document.getElementById('devs');
+    var dlist = Array.isArray(data.devices) ? data.devices : [];
+    devs.innerHTML = '';
+    if(dlist.length){
+      devs.parentElement.hidden = false;
+      dlist.forEach(function(d){
+        var li = document.createElement('li');
+        li.innerHTML = '<span class="dev-name">' + esc(d.name) + '</span>' +
+          (d.quote ? ' — <q>' + esc(d.quote) + '</q>' : '') +
+          (d.effect ? ' ' + esc(d.effect) : '');
+        devs.appendChild(li);
+      });
+    } else {
+      devs.parentElement.hidden = true;
+    }
+
+    // to-check
+    var settle = document.getElementById('settle');
+    var slist = Array.isArray(data.to_check) ? data.to_check : [];
+    settle.innerHTML = '';
+    if(slist.length){
+      settle.parentElement.hidden = false;
+      slist.forEach(function(t){
+        var li = document.createElement('li');
+        li.textContent = String(t);
+        settle.appendChild(li);
+      });
+    } else {
+      settle.parentElement.hidden = true;
+    }
+
+    document.getElementById('receipt').scrollIntoView({behavior: reduced ? 'auto' : 'smooth', block:'start'});
+  }
+})();
+</script>
+</body>
+</html>

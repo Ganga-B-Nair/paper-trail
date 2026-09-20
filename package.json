@@ -1,0 +1,14 @@
+{
+  "name": "paper-trail",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Assertion-level claim triage: paste a passage, get a receipt of what it actually asserts.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  }
+}
