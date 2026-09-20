@@ -11,65 +11,65 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
 <style>
   :root{
-    --ground:#EFF3F1;
+    --ground:#E9F4EC;
     --card:#FFFFFF;
-    --sunk:#F6F8F7;
-    --ink:#16262B;
-    --ink-2:#51686F;
-    --ink-3:#8AA0A7;
-    --line:#DDE5E3;
-    --line-soft:#EAF0EE;
-    --accent:#2C5F8E;
-    --accent-soft:#E4EDF5;
-    --ok:#12806A;
-    --ok-soft:#DFF0EB;
-    --ok-ring:rgba(18,128,106,.22);
-    --warn:#A87514;
-    --warn-soft:#FAEED6;
-    --warn-ring:rgba(168,117,20,.22);
-    --bad:#C0483F;
-    --bad-soft:#FBE4E1;
-    --bad-ring:rgba(192,72,63,.22);
-    --lift:0 1px 2px rgba(22,38,43,.04), 0 12px 32px -16px rgba(22,38,43,.22);
-    --lift-sm:0 1px 2px rgba(22,38,43,.05);
+    --sunk:#F3FAF5;
+    --ink:#182A20;
+    --ink-2:#4A6153;
+    --ink-3:#7A9385;
+    --line:#CFE3D5;
+    --line-soft:#E2F0E6;
+    --accent:#B54B77;
+    --accent-soft:#FBE6EE;
+    --ok:#1B7A51;
+    --ok-soft:#D9F0E2;
+    --ok-ring:rgba(27,122,81,.24);
+    --warn:#95670F;
+    --warn-soft:#F7EAD1;
+    --warn-ring:rgba(149,103,15,.24);
+    --bad:#BC3A52;
+    --bad-soft:#FBE0E5;
+    --bad-ring:rgba(188,58,82,.24);
+    --lift:0 1px 2px rgba(24,42,32,.04), 0 14px 36px -18px rgba(24,42,32,.24);
+    --lift-sm:0 1px 2px rgba(24,42,32,.06);
     --r-lg:22px;
     --r-md:16px;
     --r-sm:12px;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --ground:#101817;
-      --card:#182225;
-      --sunk:#141D1F;
-      --ink:#E8EFEC;
-      --ink-2:#A6BABD;
-      --ink-3:#6E868B;
-      --line:#2A383B;
-      --line-soft:#212D30;
-      --accent:#83B2DC;
-      --accent-soft:#1B2B38;
-      --ok:#4FC5A5;
-      --ok-soft:#12302A;
-      --ok-ring:rgba(79,197,165,.24);
-      --warn:#DFB155;
+      --ground:#101A14;
+      --card:#18241C;
+      --sunk:#141F18;
+      --ink:#E7F2EA;
+      --ink-2:#A6BEAE;
+      --ink-3:#6E8A79;
+      --line:#2A3B31;
+      --line-soft:#213027;
+      --accent:#F2A2C0;
+      --accent-soft:#33202A;
+      --ok:#5FC795;
+      --ok-soft:#123020;
+      --ok-ring:rgba(95,199,149,.26);
+      --warn:#E0B45C;
       --warn-soft:#2F2818;
-      --warn-ring:rgba(223,177,85,.24);
-      --bad:#EC8478;
-      --bad-soft:#331E1C;
-      --bad-ring:rgba(236,132,120,.24);
-      --lift:0 1px 2px rgba(0,0,0,.35), 0 12px 32px -16px rgba(0,0,0,.7);
+      --warn-ring:rgba(224,180,92,.26);
+      --bad:#F0808E;
+      --bad-soft:#331A1F;
+      --bad-ring:rgba(240,128,142,.26);
+      --lift:0 1px 2px rgba(0,0,0,.35), 0 14px 36px -18px rgba(0,0,0,.7);
       --lift-sm:0 1px 2px rgba(0,0,0,.4);
     }
   }
   :root[data-theme="dark"]{
-    --ground:#101817; --card:#182225; --sunk:#141D1F;
-    --ink:#E8EFEC; --ink-2:#A6BABD; --ink-3:#6E868B;
-    --line:#2A383B; --line-soft:#212D30;
-    --accent:#83B2DC; --accent-soft:#1B2B38;
-    --ok:#4FC5A5; --ok-soft:#12302A; --ok-ring:rgba(79,197,165,.24);
-    --warn:#DFB155; --warn-soft:#2F2818; --warn-ring:rgba(223,177,85,.24);
-    --bad:#EC8478; --bad-soft:#331E1C; --bad-ring:rgba(236,132,120,.24);
-    --lift:0 1px 2px rgba(0,0,0,.35), 0 12px 32px -16px rgba(0,0,0,.7);
+    --ground:#101A14; --card:#18241C; --sunk:#141F18;
+    --ink:#E7F2EA; --ink-2:#A6BEAE; --ink-3:#6E8A79;
+    --line:#2A3B31; --line-soft:#213027;
+    --accent:#F2A2C0; --accent-soft:#33202A;
+    --ok:#5FC795; --ok-soft:#123020; --ok-ring:rgba(95,199,149,.26);
+    --warn:#E0B45C; --warn-soft:#2F2818; --warn-ring:rgba(224,180,92,.26);
+    --bad:#F0808E; --bad-soft:#331A1F; --bad-ring:rgba(240,128,142,.26);
+    --lift:0 1px 2px rgba(0,0,0,.35), 0 14px 36px -18px rgba(0,0,0,.7);
     --lift-sm:0 1px 2px rgba(0,0,0,.4);
   }
 
@@ -85,37 +85,48 @@
     line-height:1.6;
     -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:780px;margin:0 auto;padding-inline:20px;padding-block:44px 88px}
+  .wrap{
+    max-width:1400px;margin:0 auto;
+    padding-inline:clamp(20px,3.5vw,52px);
+    padding-block:40px 80px;
+  }
 
   /* ---------- masthead ---------- */
-  .masthead{margin-bottom:26px}
-  .brandrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .masthead{margin-bottom:28px}
+  .brandrow{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
   .glyph{
-    width:36px;height:36px;border-radius:12px;flex:none;
+    width:38px;height:38px;border-radius:13px;flex:none;
     background:var(--accent-soft);color:var(--accent);
     display:grid;place-items:center;
   }
-  .glyph svg{width:19px;height:19px;display:block}
+  .glyph svg{width:20px;height:20px;display:block}
   h1{
     font-family:"Fraunces",Georgia,serif;
-    font-weight:600;font-size:clamp(32px,7vw,42px);
+    font-weight:600;font-size:clamp(32px,4.4vw,46px);
     font-variation-settings:"opsz" 96;
     letter-spacing:-.02em;margin:0;line-height:1.05;
   }
   .tagline{
     font-family:"DM Mono",ui-monospace,monospace;
-    font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
     color:var(--ink-3);margin-left:auto;
   }
   .lede{
     font-size:17px;color:var(--ink-2);
-    margin:16px 0 0;max-width:60ch;text-wrap:pretty;
+    margin:16px 0 0;max-width:68ch;text-wrap:pretty;
+  }
+
+  /* ---------- two-column shell ---------- */
+  .grid{display:grid;gap:24px;align-items:start}
+  @media (min-width:1020px){
+    .grid{grid-template-columns:minmax(350px,410px) 1fr;gap:30px}
+    .col-left{position:sticky;top:24px}
   }
 
   /* ---------- composer ---------- */
   .composer{
     background:var(--card);border:1px solid var(--line);
-    border-radius:var(--r-lg);padding:20px;box-shadow:var(--lift);
+    border-radius:var(--r-lg);padding:22px;box-shadow:var(--lift);
   }
   .label{
     font-family:"DM Mono",ui-monospace,monospace;
@@ -123,7 +134,7 @@
     display:block;margin-bottom:9px;
   }
   textarea{
-    width:100%;min-height:126px;resize:vertical;display:block;
+    width:100%;min-height:150px;resize:vertical;display:block;
     background:var(--sunk);color:var(--ink);
     border:1px solid var(--line-soft);border-radius:var(--r-md);
     padding:15px 17px;font:inherit;font-size:15.5px;line-height:1.6;
@@ -161,22 +172,22 @@
 
   /* ---------- receipt ---------- */
   .receipt{
-    margin-top:26px;background:var(--card);
+    background:var(--card);
     border:1px solid var(--line);border-radius:var(--r-lg);
     box-shadow:var(--lift);overflow:hidden;
   }
   .example-flag{
     font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.09em;text-transform:uppercase;
-    background:var(--accent-soft);color:var(--accent);padding:9px 22px;
+    background:var(--accent-soft);color:var(--accent);padding:9px 24px;
   }
   .receipt-head{
-    padding:22px;
+    padding:24px;
     display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;
   }
   .verdict{
     font-family:"Fraunces",Georgia,serif;font-weight:500;
     font-variation-settings:"opsz" 40;
-    font-size:22px;line-height:1.35;margin:0;max-width:44ch;text-wrap:balance;
+    font-size:clamp(21px,1.9vw,26px);line-height:1.32;margin:0;max-width:46ch;text-wrap:balance;
   }
   .stamp{
     font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.07em;text-transform:uppercase;
@@ -187,13 +198,13 @@
   .stamp.low{color:var(--bad);background:var(--bad-soft)}
 
   /* meter */
-  .meter-block{padding:0 22px 20px}
+  .meter-block{padding:0 24px 20px}
   .meter{display:flex;gap:4px;height:10px}
   .meter span{display:block;border-radius:999px;min-width:10px}
   .meter .s-ok{background:var(--ok)}
   .meter .s-warn{background:var(--warn)}
   .meter .s-bad{background:var(--bad)}
-  .keys{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:12px}
+  .keys{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px}
   .key{
     font-size:13px;color:var(--ink-2);display:flex;align-items:center;gap:7px;
     font-variant-numeric:tabular-nums;
@@ -204,14 +215,12 @@
   .dot.s-bad{background:var(--bad)}
 
   /* marked-up source */
-  .source{padding:0 22px 22px}
-  .source-inner{
-    background:var(--sunk);border-radius:var(--r-md);padding:20px 22px;
-  }
+  .source{padding:0 24px 24px}
+  .source-inner{background:var(--sunk);border-radius:var(--r-md);padding:22px 24px}
   .source p{
     font-family:"Fraunces",Georgia,serif;font-weight:400;
     font-variation-settings:"opsz" 24;
-    font-size:18px;line-height:1.8;margin:0;
+    font-size:clamp(17px,1.35vw,19.5px);line-height:1.8;margin:0;max-width:78ch;
   }
   mark{
     background:transparent;color:inherit;
@@ -224,11 +233,18 @@
   mark.lit.m-bad{background:var(--bad-soft);box-shadow:inset 0 0 0 1.5px var(--bad-ring)}
   @media (prefers-reduced-motion: reduce){ mark{transition:none} }
 
-  /* assertion rows */
-  .rows{list-style:none;margin:0;padding:0 22px 6px;display:grid;gap:12px}
+  /* assertion rows — wrap into columns on wide screens */
+  .rows{
+    list-style:none;margin:0;padding:0 24px 8px;
+    display:grid;gap:14px;
+  }
+  @media (min-width:1360px){
+    .rows{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
   .row{
     display:grid;grid-template-columns:auto 1fr;gap:0 14px;
     background:var(--sunk);border-radius:var(--r-md);padding:18px 20px;
+    align-content:start;
   }
   .num{
     font-family:"DM Mono",monospace;font-size:12px;color:var(--ink-3);
@@ -262,8 +278,13 @@
   }
 
   /* panels */
-  .panel{padding:16px 22px 0}
-  .panel:last-of-type{padding-bottom:24px}
+  .panels{display:grid;gap:0}
+  @media (min-width:1100px){
+    .panels{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 8px}
+  }
+  .panel{padding:18px 24px 0}
+  .panel:last-child{padding-bottom:26px}
+  @media (min-width:1100px){ .panel{padding-bottom:26px} }
   .panel h3{
     font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.13em;text-transform:uppercase;
     color:var(--ink-3);margin:0 0 12px;font-weight:500;
@@ -284,17 +305,17 @@
   }
 
   .foot{
-    margin-top:28px;
+    margin-top:30px;
     font-size:13px;color:var(--ink-3);
     display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
   }
   .err{
-    margin-top:20px;padding:15px 18px;border-radius:var(--r-md);
+    margin-top:18px;padding:15px 18px;border-radius:var(--r-md);
     background:var(--bad-soft);color:var(--ink);font-size:14.5px;
     box-shadow:inset 0 0 0 1px var(--bad-ring);
   }
   @media (max-width:440px){
-    .wrap{padding-block:32px 64px}
+    .wrap{padding-block:30px 60px}
     .composer{padding:16px}
     .receipt-head,.meter-block,.source,.rows,.panel{padding-inline:16px}
     .row{padding:15px 16px}
@@ -320,97 +341,105 @@
     <p class="lede">Confident paragraphs hide their seams. Paste one — a headline, a forwarded message, a press line — and it comes apart into the separate things it is actually asserting, each one marked for what it would take to check.</p>
   </header>
 
-  <section class="composer">
-    <label class="label" for="claim-input">Text under examination</label>
-    <textarea id="claim-input" spellcheck="false" placeholder="Paste a claim, a headline, or a forwarded message…">A new study proves that students who use AI tools score 40% higher on exams, which is why every serious university has already made them mandatory. Critics who disagree simply haven't read the research.</textarea>
+  <div class="grid">
+    <div class="col-left">
+      <section class="composer">
+        <label class="label" for="claim-input">Text under examination</label>
+        <textarea id="claim-input" spellcheck="false" placeholder="Paste a claim, a headline, or a forwarded message…">A new study proves that students who use AI tools score 40% higher on exams, which is why every serious university has already made them mandatory. Critics who disagree simply haven't read the research.</textarea>
 
-    <div class="samples">
-      <span class="label">Try</span>
-      <button class="chip" type="button" data-fill="Doctors are hiding the fact that this common kitchen spice cures inflammation better than any prescription drug, and the pharmaceutical industry spends billions every year to keep it out of the news.">health forward</button>
-      <button class="chip" type="button" data-fill="Our platform reduced customer churn by 63% in under six months, making it the fastest-growing retention tool on the market and the obvious choice for any serious enterprise team.">vendor claim</button>
-      <button class="chip" type="button" data-fill="Crime in the city has doubled since the new policy took effect last year, and residents everywhere say they no longer feel safe walking home after dark.">news line</button>
-    </div>
-
-    <div class="actions">
-      <button class="btn" id="run" type="button">Pull the receipt</button>
-      <button class="btn ghost" id="stop" type="button" hidden>Stop</button>
-      <span class="status" id="status"></span>
-    </div>
-  </section>
-
-  <div id="error-slot"></div>
-
-  <article class="receipt" id="receipt">
-    <div class="example-flag" id="example-flag">Example analysis — press “Pull the receipt” to run it on your own text</div>
-    <div class="receipt-head">
-      <h2 class="verdict" id="verdict">One real finding is doing the work of three claims it does not support.</h2>
-      <span class="stamp medium" id="stamp">Medium confidence</span>
-    </div>
-
-    <div class="meter-block">
-      <div class="meter" id="meter" role="img" aria-label="Composition of the passage by assertion type">
-        <span class="s-warn" style="flex:1"></span>
-        <span class="s-bad" style="flex:2"></span>
-      </div>
-      <div class="keys" id="keys">
-        <span class="key"><i class="dot s-warn"></i>1 unverifiable as written</span>
-        <span class="key"><i class="dot s-bad"></i>2 rhetoric or false</span>
-      </div>
-    </div>
-
-    <div class="source">
-      <div class="source-inner">
-        <p id="source-text"><mark class="lit m-warn">A new study proves that students who use AI tools score 40% higher on exams</mark>, which is why <mark class="lit m-bad">every serious university has already made them mandatory</mark>. <mark class="lit m-bad">Critics who disagree simply haven't read the research.</mark></p>
-      </div>
-    </div>
-
-    <ul class="rows" id="rows">
-      <li class="row">
-        <span class="num">01</span>
-        <div>
-          <p class="claim">A new study proves that students who use AI tools score 40% higher on exams</p>
-          <div class="tags"><span class="tag t-warn">Unverifiable as written</span><span class="tag t-load">Load-bearing</span></div>
-          <p class="note">No study is named, so the figure cannot be traced. “Proves” also overstates what a single study can do — and a score gap does not establish that the tools caused it.</p>
-          <p class="check"><b>What would settle it</b>The citation: which study, what sample size, was it randomised, and 40% higher than what baseline.</p>
+        <div class="samples">
+          <span class="label">Try</span>
+          <button class="chip" type="button" data-fill="Doctors are hiding the fact that this common kitchen spice cures inflammation better than any prescription drug, and the pharmaceutical industry spends billions every year to keep it out of the news.">health forward</button>
+          <button class="chip" type="button" data-fill="Our platform reduced customer churn by 63% in under six months, making it the fastest-growing retention tool on the market and the obvious choice for any serious enterprise team.">vendor claim</button>
+          <button class="chip" type="button" data-fill="Crime in the city has doubled since the new policy took effect last year, and residents everywhere say they no longer feel safe walking home after dark.">news line</button>
         </div>
-      </li>
-      <li class="row">
-        <span class="num">02</span>
-        <div>
-          <p class="claim">every serious university has already made them mandatory</p>
-          <div class="tags"><span class="tag t-bad">False as stated</span></div>
-          <p class="note">A universal claim that one counterexample defeats, and “serious” is doing quiet work — it lets any university that hasn't be dismissed as not serious.</p>
-          <p class="check"><b>What would settle it</b>A single named university with no such mandate.</p>
-        </div>
-      </li>
-      <li class="row">
-        <span class="num">03</span>
-        <div>
-          <p class="claim">Critics who disagree simply haven't read the research.</p>
-          <div class="tags"><span class="tag t-bad">Rhetoric, not evidence</span></div>
-          <p class="note">This is not a claim about the world; it is a pre-emptive dismissal that makes disagreement itself the proof of ignorance. Nothing here can be true or false.</p>
-          <p class="check"><b>What would settle it</b>Nothing — it makes no factual assertion to test.</p>
-        </div>
-      </li>
-    </ul>
 
-    <div class="panel">
-      <h3>Rhetorical moves</h3>
-      <ul class="devs" id="devs">
-        <li><span class="dev-name">Causal slide</span> — <q>which is why</q> turns an unestablished correlation into a stated reason, without argument.</li>
-        <li><span class="dev-name">No-true-Scotsman</span> — <q>every serious university</q> makes the claim unfalsifiable by redefining exceptions out of the set.</li>
-      </ul>
+        <div class="actions">
+          <button class="btn" id="run" type="button">Pull the receipt</button>
+          <button class="btn ghost" id="stop" type="button" hidden>Stop</button>
+          <span class="status" id="status"></span>
+        </div>
+      </section>
+
+      <div id="error-slot"></div>
     </div>
 
-    <div class="panel">
-      <h3>To check this yourself</h3>
-      <ul class="settle" id="settle">
-        <li>Ask for the study by name, then read its abstract rather than the summary of it.</li>
-        <li>Check whether the 40% is a test-score difference or a relative change in something else.</li>
-        <li>Look for one named university that has not made the tools mandatory.</li>
-      </ul>
+    <div class="col-right">
+      <article class="receipt" id="receipt">
+        <div class="example-flag" id="example-flag">Example analysis — press “Pull the receipt” to run it on your own text</div>
+        <div class="receipt-head">
+          <h2 class="verdict" id="verdict">One real finding is doing the work of three claims it does not support.</h2>
+          <span class="stamp medium" id="stamp">Medium confidence</span>
+        </div>
+
+        <div class="meter-block">
+          <div class="meter" id="meter" role="img" aria-label="Composition of the passage by assertion type">
+            <span class="s-warn" style="flex:1"></span>
+            <span class="s-bad" style="flex:2"></span>
+          </div>
+          <div class="keys" id="keys">
+            <span class="key"><i class="dot s-warn"></i>1 unverifiable as written</span>
+            <span class="key"><i class="dot s-bad"></i>2 rhetoric or false</span>
+          </div>
+        </div>
+
+        <div class="source">
+          <div class="source-inner">
+            <p id="source-text"><mark class="lit m-warn">A new study proves that students who use AI tools score 40% higher on exams</mark>, which is why <mark class="lit m-bad">every serious university has already made them mandatory</mark>. <mark class="lit m-bad">Critics who disagree simply haven't read the research.</mark></p>
+          </div>
+        </div>
+
+        <ul class="rows" id="rows">
+          <li class="row">
+            <span class="num">01</span>
+            <div>
+              <p class="claim">A new study proves that students who use AI tools score 40% higher on exams</p>
+              <div class="tags"><span class="tag t-warn">Unverifiable as written</span><span class="tag t-load">Load-bearing</span></div>
+              <p class="note">No study is named, so the figure cannot be traced. “Proves” also overstates what a single study can do — and a score gap does not establish that the tools caused it.</p>
+              <p class="check"><b>What would settle it</b>The citation: which study, what sample size, was it randomised, and 40% higher than what baseline.</p>
+            </div>
+          </li>
+          <li class="row">
+            <span class="num">02</span>
+            <div>
+              <p class="claim">every serious university has already made them mandatory</p>
+              <div class="tags"><span class="tag t-bad">False as stated</span></div>
+              <p class="note">A universal claim that one counterexample defeats, and “serious” is doing quiet work — it lets any university that hasn't be dismissed as not serious.</p>
+              <p class="check"><b>What would settle it</b>A single named university with no such mandate.</p>
+            </div>
+          </li>
+          <li class="row">
+            <span class="num">03</span>
+            <div>
+              <p class="claim">Critics who disagree simply haven't read the research.</p>
+              <div class="tags"><span class="tag t-bad">Rhetoric, not evidence</span></div>
+              <p class="note">This is not a claim about the world; it is a pre-emptive dismissal that makes disagreement itself the proof of ignorance. Nothing here can be true or false.</p>
+              <p class="check"><b>What would settle it</b>Nothing — it makes no factual assertion to test.</p>
+            </div>
+          </li>
+        </ul>
+
+        <div class="panels">
+          <div class="panel">
+            <h3>Rhetorical moves</h3>
+            <ul class="devs" id="devs">
+              <li><span class="dev-name">Causal slide</span> — <q>which is why</q> turns an unestablished correlation into a stated reason, without argument.</li>
+              <li><span class="dev-name">No-true-Scotsman</span> — <q>every serious university</q> makes the claim unfalsifiable by redefining exceptions out of the set.</li>
+            </ul>
+          </div>
+
+          <div class="panel">
+            <h3>To check this yourself</h3>
+            <ul class="settle" id="settle">
+              <li>Ask for the study by name, then read its abstract rather than the summary of it.</li>
+              <li>Check whether the 40% is a test-score difference or a relative change in something else.</li>
+              <li>Look for one named university that has not made the tools mandatory.</li>
+            </ul>
+          </div>
+        </div>
+      </article>
     </div>
-  </article>
+  </div>
 
   <div class="foot">
     <span>Paper Trail · assertion-level triage</span>
@@ -593,7 +622,9 @@
       settle.parentElement.hidden = true;
     }
 
-    document.getElementById('receipt').scrollIntoView({behavior: reduced ? 'auto' : 'smooth', block:'start'});
+    if(window.innerWidth < 1020){
+      document.getElementById('receipt').scrollIntoView({behavior: reduced ? 'auto' : 'smooth', block:'start'});
+    }
   }
 })();
 </script>
