@@ -117,8 +117,20 @@ export default async function handler(req, res) {
   }
   if (!upstream.ok) {
     const detail = await upstream.text().catch(() => '');
-    console.error('anthropic error', upstream.status, detail.slice(0, 500));
-    return fail(res, 502, 'upstream', `Analysis service returned ${upstream.status}.`);
+    console.error('anthropic error', upstream.status, detail.slice(0, 800));
+    let reason = '';
+    try {
+      const parsed = JSON.parse(detail);
+      reason = (parsed && parsed.error && parsed.error.message) || '';
+    } catch (_) {
+      reason = detail.slice(0, 200);
+    }
+    return fail(
+      res,
+      502,
+      'upstream',
+      `Anthropic API returned ${upstream.status}${reason ? ': ' + reason : '.'}`
+    );
   }
 
   const payload = await upstream.json().catch(() => null);
