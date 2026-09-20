@@ -24,7 +24,7 @@ It does not claim to be a fact-checker against live sources. It is a *structural
 |---|---|
 | Frontend | One static `index.html` — no build step, no framework |
 | Backend | One Vercel serverless function (`api/analyze.js`, Node 18+) |
-| Model | Anthropic Messages API |
+| Model | Google Gemini API (free tier) |
 
 The API key lives only in the serverless environment. The browser never sees it.
 
@@ -48,8 +48,8 @@ Then at [vercel.com/new](https://vercel.com/new):
 1. Import the repo.
 2. **Framework Preset:** `Other`. Leave build & output settings empty — there is no build step.
 3. Add an environment variable:
-   - Name: `ANTHROPIC_API_KEY`
-   - Value: your key from [console.anthropic.com](https://console.anthropic.com/settings/keys)
+   - Name: `GEMINI_API_KEY`
+   - Value: your key from [aistudio.google.com/apikey](https://aistudio.google.com/apikey) (free, no card required)
    - Environments: tick **Production**, **Preview**, and **Development**
 4. Deploy.
 
@@ -58,7 +58,7 @@ Then at [vercel.com/new](https://vercel.com/new):
 ```bash
 npm i -g vercel
 vercel                                  # link the project
-vercel env add ANTHROPIC_API_KEY        # paste the key, select all environments
+vercel env add GEMINI_API_KEY           # paste the key, select all environments
 vercel --prod
 ```
 
@@ -126,7 +126,7 @@ paper-trail/
 }
 ```
 
-**Errors** return `{ code, error }`. Codes the frontend handles: `no_key`, `rate_limited`, `too_long`, `bad_json`, `upstream`.
+**Errors** return `{ code, error }`. Codes the frontend handles: `no_key`, `rate_limited`, `too_long`, `blocked`, `bad_json`, `upstream`.
 
 Each `assertions[].text` is guaranteed to be a verbatim substring of the input — that is what lets the frontend highlight the original passage rather than reprinting a paraphrase.
 
@@ -144,5 +144,6 @@ Each `assertions[].text` is guaranteed to be a verbatim substring of the input �
 ## Limits
 
 - 6,000 character cap per passage.
+- Gemini free tier is rate-limited per minute; a burst of requests returns `rate_limited`.
 - Structural analysis, not source verification — it tells you what would settle a claim, not whether the claim is true.
 - Judgements come from a language model and should be read as a prompt to check, not a ruling.

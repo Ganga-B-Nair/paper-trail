@@ -1,9 +1,10 @@
 // POST /api/analyze  { text: string }  ->  assertion breakdown as JSON
 //
-// Runs on Vercel's Node runtime. The API key never reaches the browser:
-// set ANTHROPIC_API_KEY in Vercel -> Project -> Settings -> Environment Variables.
+// Runs on Vercel's Node runtime against the Gemini API (free tier).
+// The API key never reaches the browser: set GEMINI_API_KEY in
+// Vercel -> Project -> Settings -> Environment Variables.
 
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-5';
+const MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 const MAX_CHARS = 6000;
 
 const SYSTEM = [
@@ -34,7 +35,7 @@ function buildPrompt(text) {
     '  the missing baseline, the unstated comparison, or the logical leap. Never generic filler.',
     '- "check" is the single most efficient thing a reader could do to settle it.',
     '  For rhetoric, say plainly that there is nothing to test.',
-    '- "devices" lists rhetorical moves in the passage, each with a verbatim quote. Omit if there are none.',
+    '- "devices" lists rhetorical moves in the passage, each with a verbatim quote. Empty array if none.',
     '- "to_check" is 2-4 concrete actions a reader could take.',
     '',
     'Reply with only a JSON object of this shape:',
@@ -52,8 +53,7 @@ function buildPrompt(text) {
 
 // Tolerant JSON extraction: whole reply, else a fenced block, else first { to last }.
 function parseLoose(raw) {
-  const tries = [];
-  tries.push(raw);
+  const tries = [raw];
   const fence = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (fence) tries.push(fence[1]);
   const first = raw.indexOf('{');
@@ -75,9 +75,9 @@ export default async function handler(req, res) {
     return fail(res, 405, 'method', 'Use POST.');
   }
 
-  const key = process.env.ANTHROPIC_API_KEY;
+  const key = process.env.GEMINI_API_KEY;
   if (!key) {
-    return fail(res, 500, 'no_key', 'ANTHROPIC_API_KEY is not set on the server.');
+    return fail(res, 500, 'no_key', 'GEMINI_API_KEY is not set on the server.');
   }
 
   let body = req.body;
@@ -91,21 +91,25 @@ export default async function handler(req, res) {
     return fail(res, 413, 'too_long', `Passage is ${text.length} characters; the limit is ${MAX_CHARS}.`);
   }
 
+  const endpoint =
+    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(MODEL)}:generateContent`;
+
   let upstream;
   try {
-    upstream = await fetch('https://api.anthropic.com/v1/messages', {
+    upstream = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01'
+        'x-goog-api-key': key
       },
       body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 2400,
-        temperature: 0.2,
-        system: SYSTEM,
-        messages: [{ role: 'user', content: buildPrompt(text) }]
+        systemInstruction: { parts: [{ text: SYSTEM }] },
+        contents: [{ role: 'user', parts: [{ text: buildPrompt(text) }] }],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 4096,
+          responseMimeType: 'application/json'
+        }
       })
     });
   } catch (e) {
@@ -113,11 +117,12 @@ export default async function handler(req, res) {
   }
 
   if (upstream.status === 429) {
-    return fail(res, 429, 'rate_limited', 'Rate limited upstream. Wait a moment and retry.');
+    return fail(res, 429, 'rate_limited', 'Free-tier rate limit hit. Wait about a minute and retry.');
   }
+
   if (!upstream.ok) {
     const detail = await upstream.text().catch(() => '');
-    console.error('anthropic error', upstream.status, detail.slice(0, 800));
+    console.error('gemini error', upstream.status, detail.slice(0, 800));
     let reason = '';
     try {
       const parsed = JSON.parse(detail);
@@ -125,20 +130,26 @@ export default async function handler(req, res) {
     } catch (_) {
       reason = detail.slice(0, 200);
     }
-    return fail(
-      res,
-      502,
-      'upstream',
-      `Anthropic API returned ${upstream.status}${reason ? ': ' + reason : '.'}`
-    );
+    return fail(res, 502, 'upstream', `Gemini API returned ${upstream.status}${reason ? ': ' + reason : '.'}`);
   }
 
   const payload = await upstream.json().catch(() => null);
-  const raw = payload && Array.isArray(payload.content)
-    ? payload.content.filter(b => b.type === 'text').map(b => b.text).join('')
+
+  const blocked = payload && payload.promptFeedback && payload.promptFeedback.blockReason;
+  if (blocked) {
+    return fail(res, 422, 'blocked', `The passage was blocked by the model's safety filter (${blocked}). Try different text.`);
+  }
+
+  const candidate = payload && Array.isArray(payload.candidates) ? payload.candidates[0] : null;
+  const raw = candidate && candidate.content && Array.isArray(candidate.content.parts)
+    ? candidate.content.parts.map(p => p.text || '').join('')
     : '';
 
-  if (!raw.trim()) return fail(res, 502, 'upstream', 'Empty response from the analysis service.');
+  if (!raw.trim()) {
+    const why = candidate && candidate.finishReason ? ` (finishReason: ${candidate.finishReason})` : '';
+    console.error('empty gemini reply', JSON.stringify(payload).slice(0, 500));
+    return fail(res, 502, 'upstream', `Empty response from the analysis service${why}.`);
+  }
 
   const data = parseLoose(raw);
   if (!data || !Array.isArray(data.assertions)) {
